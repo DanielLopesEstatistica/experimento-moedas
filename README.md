@@ -1,5 +1,15 @@
 ﻿# Nancy's Work
 
+## Data de criação
+
+Datas inferidas dos metadados dos arquivos em `C:\R\Nancy's Work` (Windows).
+
+| Referência | Data |
+|------------|------|
+| Pasta criada no disco | 23 de dezembro de 2022 |
+| Primeiro código ou notebook versionado | 18 de novembro de 2022 (`Trabalho_Nancy.Rmd`) |
+| Repositório Git (commit inicial) | 16 de novembro de 2026 |
+
 Projeto local em `C:\R\Nancy's Work`.
 
 ## Como usar
