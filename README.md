@@ -1,6 +1,6 @@
 ﻿<sub>**Datas:** pasta 23/12/2022 · código 18/11/2022 (`lancamentos.xlsx`)</sub>
 
-# Nancy's Work — moedas e proporções
+# Trabalho da matéria da Nancy — moedas e proporções
 
 Experimento de **cara/coroa** com quatro pessoas; teste **Z** para proporção 2/3 vs observado.
 
