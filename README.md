@@ -1,21 +1,22 @@
-﻿# Nancy's Work
+﻿<sub>**Datas:** pasta 23/12/2022 · código 18/11/2022 (`lancamentos.xlsx`)</sub>
 
-## Data de criação
+# Nancy's Work — moedas e proporções
 
-Datas inferidas dos metadados dos arquivos em `C:\R\Nancy's Work` (Windows).
+Experimento de **cara/coroa** com quatro pessoas; teste **Z** para proporção 2/3 vs observado.
 
-| Referência | Data |
-|------------|------|
-| Pasta criada no disco | 23 de dezembro de 2022 |
-| Primeiro código ou notebook versionado | 18 de novembro de 2022 (`Trabalho_Nancy.Rmd`) |
-| Repositório Git (commit inicial) | 16 de novembro de 2026 |
+## O que o código faz
 
-Projeto local em `C:\R\Nancy's Work`.
+| Arquivo | Função |
+|---------|--------|
+| `Trabalho_Nancy.Rmd` | Lê lançamentos da planilha por blocos Excel; contagem caras/coroas; teste de hipótese |
+| `moedas.Rmd` | Gera dataset sintético e grava `moedas.csv` |
 
-## Como usar
+## Dados
 
-Abra os arquivos `.R`, `.Rmd`, `.py` ou o `.Rproj` nesta pasta no RStudio ou no editor de sua preferência.
+`lancamentos.xlsx` — abas/ranges fixos com resultados de João, Lucas, Ana e Daniel.
 
-## Dados grandes
+`moedas.csv` — saída do segundo Rmd.
 
-Arquivos acima de 100 MB podem estar listados no `.gitignore`; obtenha-os localmente se o código referenciar esses caminhos.
+## Como rodar
+
+WD na pasta → knit `Trabalho_Nancy.Rmd` (`readxl`).
