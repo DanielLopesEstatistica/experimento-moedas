@@ -1,0 +1,178 @@
+---
+title: "Nancy's"
+author: "Daniel Lopes"
+date: "2022-11-18"
+output: html_document
+---
+
+```{r}
+library(readxl)
+library(tidyverse)
+```
+
+
+```{r}
+moeda_1 <- cbind(read_excel(path = "lancamentos.xlsx", range = "E2:G101", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "A102:C201", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "M202:O301", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "I302:K401", col_names = FALSE))
+
+moeda_2 <- cbind(read_excel(path = "lancamentos.xlsx", range = "A2:C101", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "E102:G201", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "I202:K301", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "M302:O401", col_names = FALSE))
+
+moeda_3 <- cbind(read_excel(path = "lancamentos.xlsx", range = "I2:K101", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "M102:O201", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "E202:G301", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "A302:C401", col_names = FALSE))
+
+moeda_4 <- cbind(read_excel(path = "lancamentos.xlsx", range = "M2:O101", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "I102:K201", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "A202:C301", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "E302:G401", col_names = FALSE))
+```
+
+
+```{r}
+names(moeda_1) <- c("1", "Joao_inicial", "Joao_final", "2", "Lucas_inicial", "Lucas_final", "3", "Ana_inicial", "Ana_final", "4", "Daniel_inicial", "Daniel_final")
+
+names(moeda_2) <- c("2", "Lucas_inicial", "Lucas_final", "1", "Joao_inicial", "Joao_final", "4", "Daniel_inicial", "Daniel_final", "3", "Ana_inicial", "Ana_final")
+
+names(moeda_3) <- c("4", "Daniel_inicial", "Daniel_final", "3", "Ana_inicial", "Ana_final", "1", "Joao_inicial", "Joao_final", "2", "Lucas_inicial", "Lucas_final")
+
+names(moeda_4) <- c("3", "Ana_inicial", "Ana_final", "4", "Daniel_inicial", "Daniel_final", "2", "Lucas_inicial", "Lucas_final", "1", "Joao_inicial", "Joao_final")
+```
+
+```{r}
+face_to_number <- function(x){
+  if(x == "cara"){
+    valor = 0
+  }
+  if(x == "coroa"){
+    valor = 1
+  }
+  if(x == "cora"){
+    valor = 1
+  }
+  
+  return(valor)
+}
+
+face_to_number <- Vectorize(face_to_number)
+
+moeda_1 <- moeda_1 %>% select("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final") %>% drop_na() %>% mutate_all(str_to_lower) %>% mutate_all(face_to_number)
+
+moeda_2 <- moeda_2 %>% select("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final") %>% drop_na() %>% mutate_all(str_to_lower) %>% mutate_all(face_to_number)
+
+moeda_3 <- moeda_3 %>% select("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final") %>% drop_na() %>% mutate_all(str_to_lower) %>% mutate_all(face_to_number)
+
+moeda_4 <- moeda_4 %>% select("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final") %>% drop_na() %>% mutate_all(str_to_lower) %>% mutate_all(face_to_number)
+
+```
+
+```{r}
+colnames(moeda_1) <- paste(colnames(moeda_1), "_moeda_1", sep = "")
+colnames(moeda_2) <- paste(colnames(moeda_2), "_moeda_2", sep = "")
+colnames(moeda_3) <- paste(colnames(moeda_3), "_moeda_3", sep = "")
+colnames(moeda_4) <- paste(colnames(moeda_4), "_moeda_4", sep = "")
+```
+
+```{r}
+moedas_df <- cbind(moeda_1, moeda_2, moeda_3, moeda_4)
+
+write.csv(moedas_df, "moedas.csv", row.names= FALSE)
+```
+
+```{r}
+colnames(moeda_1) <- c("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final")
+colnames(moeda_2) <- c("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final") 
+colnames(moeda_3) <- c("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final") 
+colnames(moeda_4) <- c("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final") 
+
+moedas_df_2 <- rbind(moeda_1, moeda_2, moeda_3, moeda_4)
+```
+
+```{r}
+AJ <- table(moedas_df_2$Ana_inicial, moedas_df_2$Ana_final)
+
+DAN <- table(moedas_df_2$Daniel_inicial, moedas_df_2$Daniel_final)
+
+FUR <- table(moedas_df_2$Joao_inicial, moedas_df_2$Joao_final)
+
+KIST <- table(moedas_df_2$Lucas_inicial, moedas_df_2$Lucas_final)
+todos <- AJ+DAN+FUR+KIST
+
+prop.test(c(393, 398), c(393+413,396+398))
+```
+```{r}
+moedas_df_3 <- moedas_df_2 %>% mutate(Ana_suc = ifelse(Ana_inicial == Ana_final, 1, 0)) %>% mutate(Daniel_suc = ifelse(Daniel_inicial == Daniel_final, 1, 0)) %>% mutate(Joao_suc = ifelse(Joao_inicial == Joao_final, 1, 0)) %>% mutate(Lucas_suc = ifelse(Lucas_inicial == Lucas_final, 1, 0))
+```
+
+
+```{r}
+z_test <- function(x){
+  n_suc = sum(x)
+  p0 = 2/3
+  n = length(x)
+  if(n_suc > p0*n){
+    stat = n_suc + 1/2 - p0*n
+  }
+  else{stat = n_suc - 1/2 - p0*n}
+  
+  z_stat  <- stat/sqrt(n*p0*(1-p0))
+  p_value <- 2*pnorm(-abs(z_stat))
+  
+  vetor = c(p0*n, n_suc, z_stat, p_value)
+  
+  return(vetor)
+}
+
+z_test <- Vectorize(z_test)
+
+z_test(moedas_df_3[,9:12])
+```
+
+```{r}
+nomes <- c("Inicial", "Final", "Inicial", "Final", "Inicial", "Final", "Inicial", "Final")
+
+colnames(moeda_1) <- nomes
+colnames(moeda_2) <- nomes
+colnames(moeda_3) <- nomes
+colnames(moeda_4) <- nomes
+
+moeda_1_long <- cbind(c(moeda_1[,1], moeda_1[,3], moeda_1[,5], moeda_1[,7]), c(moeda_1[,2], moeda_1[,4], moeda_1[,6], moeda_1[,8])) %>% as.data.frame() %>% mutate(Suc = ifelse(V1 == V2, 1, 0))
+names(moeda_1_long) <- c("Inicial", "Final", "Suc")
+
+moeda_2_long <- cbind(c(moeda_2[,1], moeda_2[,3], moeda_2[,5], moeda_2[,7]), c(moeda_2[,2], moeda_2[,4], moeda_2[,6], moeda_2[,8])) %>% as.data.frame() %>% mutate(Suc = ifelse(V1 == V2, 1, 0))
+names(moeda_2_long) <- c("Inicial", "Final", "Suc")
+
+moeda_3_long <- cbind(c(moeda_3[,1], moeda_3[,3], moeda_3[,5], moeda_3[,7]), c(moeda_3[,2], moeda_3[,4], moeda_3[,6], moeda_3[,8])) %>% as.data.frame() %>% mutate(Suc = ifelse(V1 == V2, 1, 0))
+names(moeda_3_long) <- c("Inicial", "Final", "Suc")
+
+moeda_4_long <- cbind(c(moeda_4[,1], moeda_4[,3], moeda_4[,5], moeda_4[,7]), c(moeda_4[,2], moeda_4[,4], moeda_4[,6], moeda_4[,8])) %>% as.data.frame() %>% mutate(Suc = ifelse(V1 == V2, 1, 0))
+names(moeda_4_long) <- c("Inicial", "Final", "Suc")
+```
+
+```{r}
+df_moedas_long <- cbind(moeda_1_long$Suc, moeda_2_long$Suc, moeda_3_long$Suc, moeda_4_long$Suc) %>% as.data.frame()
+names(df_moedas_long) <- c("Sucessos_moeda_1", "Sucessos_moeda_2", "Sucessos_moeda_3", "Sucessos_moeda_4")
+
+
+z_test(df_moedas_long)
+```
+```{r}
+moedas_df_2$Moeda <- c(rep(1, 100), rep(2, 100), rep(3, 100), rep(4, 100))
+names(moedas_df_2) <- c("Inicial", "Final", "Inicial", "Final", "Inicial", "Final", "Inicial", "Final", "Moeda")
+
+moedas_df_long <- cbind(Inicial = c(moedas_df_2[,1], moedas_df_2[,3], moedas_df_2[,5], moedas_df_2[,7]), Final = c(moedas_df_2[,2], moedas_df_2[,4], moedas_df_2[,6], moedas_df_2[,8]), Moeda = moedas_df_2[,9]) %>% as.data.frame()
+```
+
+```{r}
+moedas_grafico <- moedas_df_long %>% group_by(Inicial, Moeda) %>% summarise(Final = sum(Final), .groups = 'drop') %>% mutate(Inicial = ifelse(Inicial == 1, "Coroa", "Cara")) 
+moedas_grafico$Final_2 <- (200 - moedas_grafico$Final)
+moedas_grafico <- moedas_grafico %>% pivot_longer(c(Final, Final_2), names_to = "Face Final") %>% mutate(`Face Final` = ifelse(`Face Final` == "Final", "Coroa", "Cara"))
+```
+
+```{r}
+labs_facet <- c("Moeda 1", "Moeda 2", "Moeda 3", "Moeda 4")
+names(labs_facet) <- c("1", "2", "3", "4")
+
+moedas_grafico %>% 
+  ggplot(aes(x = Inicial, y = value, fill = `Face Final`))+
+  geom_bar(stat = "identity", width=0.7, position = "Dodge")+
+  facet_grid(~Moeda, labeller = labeller(Moeda = labs_facet))+
+  labs(x = "Face Inicial", y = "Face Final")+
+  theme_bw()
+```
+
+
+

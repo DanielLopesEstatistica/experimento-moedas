@@ -1,0 +1,125 @@
+---
+title: "Moedas_compacto"
+author: "Daniel Lopes"
+date: "2022-11-18"
+output: html_document
+---
+
+```{r}
+library(readxl)
+library(tidyverse)
+```
+
+
+```{r}
+moeda_1 <- cbind(read_excel(path = "lancamentos.xlsx", range = "E2:G101", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "A102:C201", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "M202:O301", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "I302:K401", col_names = FALSE))
+
+moeda_2 <- cbind(read_excel(path = "lancamentos.xlsx", range = "A2:C101", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "E102:G201", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "I202:K301", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "M302:O401", col_names = FALSE))
+
+moeda_3 <- cbind(read_excel(path = "lancamentos.xlsx", range = "I2:K101", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "M102:O201", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "E202:G301", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "A302:C401", col_names = FALSE))
+
+moeda_4 <- cbind(read_excel(path = "lancamentos.xlsx", range = "M2:O101", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "I102:K201", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "A202:C301", col_names = FALSE), read_excel(path = "lancamentos.xlsx", range = "E302:G401", col_names = FALSE))
+```
+
+
+```{r}
+names(moeda_1) <- c("1", "Joao_inicial", "Joao_final", "2", "Lucas_inicial", "Lucas_final", "3", "Ana_inicial", "Ana_final", "4", "Daniel_inicial", "Daniel_final")
+
+names(moeda_2) <- c("2", "Lucas_inicial", "Lucas_final", "1", "Joao_inicial", "Joao_final", "4", "Daniel_inicial", "Daniel_final", "3", "Ana_inicial", "Ana_final")
+
+names(moeda_3) <- c("4", "Daniel_inicial", "Daniel_final", "3", "Ana_inicial", "Ana_final", "1", "Joao_inicial", "Joao_final", "2", "Lucas_inicial", "Lucas_final")
+
+names(moeda_4) <- c("3", "Ana_inicial", "Ana_final", "4", "Daniel_inicial", "Daniel_final", "2", "Lucas_inicial", "Lucas_final", "1", "Joao_inicial", "Joao_final")
+```
+
+```{r}
+face_to_number <- function(x){
+  if(x == "cara"){
+    valor = 0
+  }
+  if(x == "coroa"){
+    valor = 1
+  }
+  if(x == "cora"){
+    valor = 1
+  }
+  
+  return(valor)
+}
+
+face_to_number <- Vectorize(face_to_number)
+
+moeda_1 <- moeda_1 %>% select("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final") %>% drop_na() %>% mutate_all(str_to_lower) %>% mutate_all(face_to_number)
+
+moeda_2 <- moeda_2 %>% select("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final") %>% drop_na() %>% mutate_all(str_to_lower) %>% mutate_all(face_to_number)
+
+moeda_3 <- moeda_3 %>% select("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final") %>% drop_na() %>% mutate_all(str_to_lower) %>% mutate_all(face_to_number)
+
+moeda_4 <- moeda_4 %>% select("Ana_inicial" , "Ana_final", "Daniel_inicial", "Daniel_final", "Joao_inicial", "Joao_final", "Lucas_inicial", "Lucas_final") %>% drop_na() %>% mutate_all(str_to_lower) %>% mutate_all(face_to_number)
+
+moedas_DF <- rbind(moeda_1, moeda_2, moeda_3, moeda_4)
+
+```
+
+
+```{r}
+z_test <- function(x){
+  n_suc = sum(x)
+  p0 = 2/3
+  n = length(x)
+  if(n_suc > p0*n){
+    stat = n_suc + 1/2 - p0*n
+  }
+  else{stat = n_suc - 1/2 - p0*n}
+  
+  z_stat  <- stat/sqrt(n*p0*(1-p0))
+  p_value <- 2*pnorm(-abs(z_stat))
+  
+  vetor = c(p0*n, n_suc, z_stat, p_value) %>% t() %>% as.data.frame()
+  names(vetor) = c("Quantidade Esperada", "Quantidade Observada", "Estatística Z", "P-Valor")
+  
+  return(vetor)
+}
+
+z_test <- Vectorize(z_test)
+```
+
+```{r}
+moedas_DF$Moeda <- c(rep(1, 100), rep(2, 100), rep(3, 100), rep(4, 100))
+names(moedas_DF) <- c("Inicial", "Final", "Inicial", "Final", "Inicial", "Final", "Inicial", "Final", "Moeda")
+
+moedas_df_long <- cbind(Inicial = c(moedas_DF[,1], moedas_DF[,3], moedas_DF[,5], moedas_DF[,7]), Final = c(moedas_DF[,2], moedas_DF[,4], moedas_DF[,6], moedas_DF[,8]), Moeda = moedas_DF[,9]) %>% as.data.frame() %>% mutate(Sucesso = ifelse(Inicial == Final, 1, 0)) %>% arrange(desc(-Moeda))
+```
+
+```{r}
+moedas_sucesso <- as.data.frame(rep(0,400))
+moedas_sucesso$Sucesso_1 <- moedas_df_long[1:400,4]
+moedas_sucesso$Sucesso_2 <- moedas_df_long[401:800,4]
+moedas_sucesso$Sucesso_3 <- moedas_df_long[801:1200,4]
+moedas_sucesso$Sucesso_4 <- moedas_df_long[1201:1600,4]
+moedas_sucesso <- moedas_sucesso[,-1] 
+names(moedas_sucesso) <- c("Sucessos Moeda 1", "Sucessos Moeda 2", "Sucessos Moeda 3", "Sucessos Moeda 4")
+```
+
+```{r}
+z_test(moedas_sucesso)
+```
+
+
+```{r}
+moedas_grafico <- moedas_df_long %>% group_by(Inicial, Moeda) %>% summarise(Final = sum(Final), .groups = 'drop') %>% mutate(Inicial = ifelse(Inicial == 1, "Coroa", "Cara")) 
+moedas_grafico$Final_2 <- (200 - moedas_grafico$Final)
+moedas_grafico <- moedas_grafico %>% pivot_longer(c(Final, Final_2), names_to = "Face Final") %>% mutate(`Face Final` = ifelse(`Face Final` == "Final", "Coroa", "Cara"))
+```
+
+```{r}
+labs_facet <- c("Moeda 1", "Moeda 2", "Moeda 3", "Moeda 4")
+names(labs_facet) <- c("1", "2", "3", "4")
+
+moedas_grafico %>% 
+  ggplot(aes(x = Inicial, y = value, fill = `Face Final`))+
+  geom_bar(stat = "identity", width=0.7, position = "Dodge")+
+  facet_grid(~Moeda, labeller = labeller(Moeda = labs_facet))+
+  labs(x = "Face Inicial", y = "Contagem da Face Final")+
+  theme_bw()
+```
